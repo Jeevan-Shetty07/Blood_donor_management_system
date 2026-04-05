@@ -3,6 +3,7 @@ D:\prdct\java-project\Blood_donor_management_system\src\main\java\com\healthcare
 D:\prdct\java-project\Blood_donor_management_system\src\main\java\com\healthcare\blooddonormanagement\model\Hospital.java
 D:\prdct\java-project\Blood_donor_management_system\src\main\java\com\healthcare\blooddonormanagement\BloodDonorManagementApplication.java
 D:\prdct\java-project\Blood_donor_management_system\src\main\java\com\healthcare\blooddonormanagement\service\DonorService.java
+D:\prdct\java-project\Blood_donor_management_system\src\main\java\com\healthcare\blooddonormanagement\exception\GlobalExceptionHandler.java
 D:\prdct\java-project\Blood_donor_management_system\src\main\java\com\healthcare\blooddonormanagement\model\Donor.java
 D:\prdct\java-project\Blood_donor_management_system\src\main\java\com\healthcare\blooddonormanagement\service\HospitalService.java
 D:\prdct\java-project\Blood_donor_management_system\src\main\java\com\healthcare\blooddonormanagement\model\BloodRequest.java

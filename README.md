@@ -39,4 +39,4 @@ Available at: `http://localhost:5173`
 - `frontend/`: React components and vite configuration.
 - `pom.xml`: Backend dependencies.
 - `application.properties`: Configuration file.
-$env:JAVA_HOME='C:\Program Files\Java\jdk-24'; ./mvnw.cmd spring-boot:run -DskipTests
+<!-- $env:JAVA_HOME='C:\Program Files\Java\jdk-24'; ./mvnw.cmd spring-boot:run -DskipTests -->
