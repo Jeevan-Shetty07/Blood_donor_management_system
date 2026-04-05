@@ -1,0 +1,13 @@
+com\healthcare\blooddonormanagement\service\HospitalService.class
+com\healthcare\blooddonormanagement\model\Donor.class
+com\healthcare\blooddonormanagement\BloodDonorManagementApplication.class
+com\healthcare\blooddonormanagement\service\DonorService.class
+com\healthcare\blooddonormanagement\controller\BloodRequestController.class
+com\healthcare\blooddonormanagement\model\BloodRequest.class
+com\healthcare\blooddonormanagement\service\BloodRequestService.class
+com\healthcare\blooddonormanagement\controller\DonorController.class
+com\healthcare\blooddonormanagement\repository\HospitalRepository.class
+com\healthcare\blooddonormanagement\controller\HospitalController.class
+com\healthcare\blooddonormanagement\model\Hospital.class
+com\healthcare\blooddonormanagement\repository\DonorRepository.class
+com\healthcare\blooddonormanagement\repository\BloodRequestRepository.class

@@ -3,15 +3,9 @@ package com.healthcare.blooddonormanagement.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "donors")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Donor {
 
     @Id
@@ -33,4 +27,63 @@ public class Donor {
     private String phone;
 
     private String address;
+
+    public Donor() {}
+
+    public Donor(Long id, String name, String email, String bloodGroup, String phone, String address) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.bloodGroup = bloodGroup;
+        this.phone = phone;
+        this.address = address;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getBloodGroup() {
+        return bloodGroup;
+    }
+
+    public void setBloodGroup(String bloodGroup) {
+        this.bloodGroup = bloodGroup;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }

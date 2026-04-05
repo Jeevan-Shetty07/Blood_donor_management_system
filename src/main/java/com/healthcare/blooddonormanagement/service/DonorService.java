@@ -2,16 +2,18 @@ package com.healthcare.blooddonormanagement.service;
 
 import com.healthcare.blooddonormanagement.model.Donor;
 import com.healthcare.blooddonormanagement.repository.DonorRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class DonorService {
 
     private final DonorRepository donorRepository;
+
+    public DonorService(DonorRepository donorRepository) {
+        this.donorRepository = donorRepository;
+    }
 
     public Donor registerDonor(Donor donor) {
         if (donorRepository.existsByEmail(donor.getEmail())) {

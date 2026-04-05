@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'http://127.0.0.1:8080/api';
 
 const handleResponse = async (response) => {
   if (!response.ok) {
@@ -11,7 +11,7 @@ const handleResponse = async (response) => {
 export const api = {
   // Donors
   getDonors: () => fetch(`${API_BASE_URL}/donors`).then(handleResponse),
-  registerDonor: (donor) => fetch(`${API_BASE_URL}/donors`, {
+  registerDonor: (donor) => fetch(`${API_BASE_URL}/donors/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(donor),
@@ -20,7 +20,7 @@ export const api = {
 
   // Hospitals
   getHospitals: () => fetch(`${API_BASE_URL}/hospitals`).then(handleResponse),
-  registerHospital: (hospital) => fetch(`${API_BASE_URL}/hospitals`, {
+  registerHospital: (hospital) => fetch(`${API_BASE_URL}/hospitals/add`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(hospital),
@@ -28,12 +28,12 @@ export const api = {
 
   // Blood Requests
   getRequests: () => fetch(`${API_BASE_URL}/requests`).then(handleResponse),
-  createRequest: (request) => fetch(`${API_BASE_URL}/requests`, {
+  createRequest: (request) => fetch(`${API_BASE_URL}/requests/create`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
   }).then(handleResponse),
   updateRequestStatus: (id, status) => fetch(`${API_BASE_URL}/requests/${id}/status?status=${encodeURIComponent(status)}`, {
-    method: 'PATCH',
+    method: 'PUT', // Matches @PutMapping in BloodRequestController
   }).then(handleResponse),
 };
