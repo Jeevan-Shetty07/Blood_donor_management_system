@@ -1,49 +1,36 @@
 :root {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: #1a1a1a;
-  background-color: #f8f9fa;
+  color: #0f172a;
+  background-color: #f8fafc;
 
-  /* Primary Palette */
-  --primary: #d32f2f;
-  --primary-hover: #b71c1c;
-  --primary-light: #ffcdd2;
-  --secondary: #37474f;
+  /* Primary Palette - Pulse Red & Slate */
+  --primary: #ef4444;
+  --primary-hover: #dc2626;
+  --primary-light: #fee2e2;
+  --secondary: #334155;
+  --accent: #f97316;
   
-  /* Neutral Palette */
-  --bg-main: #f8f9fa;
+  /* Neutral Palette - Light Theme Optimized */
+  --bg-main: #f8fafc;
   --bg-card: #ffffff;
-  --text-main: #1a1a1a;
-  --text-muted: #6c757d;
-  --border-color: #dee2e6;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
 
   /* State Colors */
-  --success: #2e7d32;
-  --warning: #f57c00;
-  --error: #d32f2f;
-  --info: #0288d1;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #0ea5e9;
 
-  /* Shadow & Blur */
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-  --shadow-lg: 10px 10px 20px rgba(0,0,0,0.15);
-  --glass: rgba(255, 255, 255, 0.7);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f8f9fa;
-    background-color: #121212;
-    --bg-main: #121212;
-    --bg-card: #1e1e1e;
-    --text-main: #f8f9fa;
-    --text-muted: #adb5bd;
-    --border-color: #333;
-    --glass: rgba(30, 30, 30, 0.7);
-  }
+  /* Shadow & Blur - Premium Soft Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  --glass: rgba(255, 255, 255, 0.85);
 }
 
 * {
@@ -86,13 +73,16 @@ input, select, textarea {
 }
 
 .glass-card {
-  background: var(--glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 1rem;
-  padding: 2rem;
+  border-radius: 1.25rem;
+  padding: 2.5rem;
   box-shadow: var(--shadow-md);
+  transition: box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .btn {
@@ -133,13 +123,12 @@ input, select, textarea {
 }
 
 .section-title {
-  font-size: 3.5rem;
+  font-size: 4rem;
   margin-bottom: 1.5rem;
-  font-weight: 800;
-  line-height: 1.1;
-  background: linear-gradient(135deg, var(--primary), #ffa726);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--text-main);
+  letter-spacing: -0.05em;
 }
 
 /* Navbar */
@@ -265,12 +254,19 @@ input, select, textarea {
 }
 
 .modern-form input, .modern-form textarea, .modern-form select {
-  padding: 0.875rem;
-  border-radius: 0.5rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
   border: 1px solid var(--border-color);
-  background: var(--bg-card);
+  background: #f1f5f9;
   color: var(--text-main);
   font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.modern-form input:focus, .modern-form textarea:focus, .modern-form select:focus {
+  background: white;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-light);
 }
 
 .w-full { width: 100%; }
@@ -336,13 +332,18 @@ input, select, textarea {
 .status-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
-  background: var(--primary-light);
-  color: var(--primary);
+  border-radius: 9999px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
   font-size: 0.75rem;
   font-weight: 700;
   margin-top: 0.5rem;
 }
+
+.badge-high { color: var(--error); background: #fef2f2; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+.badge-medium { color: var(--warning); background: #fffbeb; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+.badge-low { color: var(--info); background: #f0f9ff; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
 
 /* Auth Styles */
 .auth-container {
@@ -350,7 +351,7 @@ input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e0e0e0 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
 }
 
 .auth-card {

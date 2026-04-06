@@ -325,7 +325,7 @@ function App() {
                     <div className="request-badge">{req.bloodGroupNeeded}</div>
                     <div className="request-details">
                       <h4>Hospital: {req.hospitalName || 'Unknown'}</h4>
-                      <p className="urgency">Urgency: {req.urgency}</p>
+                      <p className="urgency">Urgency: <span className={`badge-${req.urgency.toLowerCase()}`}>{req.urgency}</span></p>
                       <p className="notes">{req.notes}</p>
                       <div className="status-badge">{req.status}</div>
                     </div>
