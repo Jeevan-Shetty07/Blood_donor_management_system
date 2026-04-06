@@ -2,24 +2,33 @@ import { useState, useEffect } from 'react';
 import { api } from './services/api';
 
 function App() {
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
   const [activeTab, setActiveTab] = useState('home');
+  const [isLogin, setIsLogin] = useState(true);
+  
+  // Auth Form State
+  const [authForm, setAuthForm] = useState({ username: '', password: '', role: 'ROLE_USER' });
+  
+  // Data States
   const [donors, setDonors] = useState([]);
   const [hospitals, setHospitals] = useState([]);
   const [requests, setRequests] = useState([]);
   const [searchGroup, setSearchGroup] = useState('');
 
-  // Form states
+  // Business Form states
   const [donorForm, setDonorForm] = useState({ name: '', email: '', bloodGroup: '', phone: '', address: '' });
   const [hospitalForm, setHospitalForm] = useState({ name: '', location: '', contactNumber: '' });
   const [requestForm, setRequestForm] = useState({ hospitalId: '', bloodGroupNeeded: '', urgency: 'MEDIUM', notes: '' });
 
   useEffect(() => {
-    fetchData();
-  }, [activeTab]);
+    if (user) {
+      fetchData();
+    }
+  }, [activeTab, user]);
 
   const fetchData = async () => {
     try {
-      if (activeTab === 'donors') {
+      if (activeTab === 'donors' && user.role === 'ROLE_HOSPITAL') {
         const data = await api.getDonors();
         setDonors(data);
       } else if (activeTab === 'hospitals') {
@@ -32,6 +41,31 @@ function App() {
     } catch (err) {
       console.error('Fetch error:', err);
     }
+  };
+
+  const handleAuth = async (e) => {
+    e.preventDefault();
+    try {
+      let data;
+      if (isLogin) {
+        data = await api.login({ username: authForm.username, password: authForm.password });
+      } else {
+        data = await api.register(authForm);
+      }
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data));
+      setUser(data);
+      alert(`${isLogin ? 'Login' : 'Registration'} successful!`);
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    setActiveTab('home');
   };
 
   const handleDonorSubmit = async (e) => {
@@ -88,6 +122,54 @@ function App() {
     }
   };
 
+  if (!user) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card glass-card">
+          <div className="logo">
+            <span className="logo-icon">🩸</span>
+            <span className="logo-text">BloodLink</span>
+          </div>
+          <h2>{isLogin ? 'Welcome Back' : 'Join the Community'}</h2>
+          <form onSubmit={handleAuth} className="modern-form">
+            <input 
+              type="text" 
+              placeholder="Username" 
+              value={authForm.username} 
+              onChange={e => setAuthForm({...authForm, username: e.target.value})} 
+              required 
+            />
+            <input 
+              type="password" 
+              placeholder="Password" 
+              value={authForm.password} 
+              onChange={e => setAuthForm({...authForm, password: e.target.value})} 
+              required 
+            />
+            {!isLogin && (
+              <select 
+                value={authForm.role} 
+                onChange={e => setAuthForm({...authForm, role: e.target.value})}
+              >
+                <option value="ROLE_USER">I am a Donor</option>
+                <option value="ROLE_HOSPITAL">I am a Hospital Representative</option>
+              </select>
+            )}
+            <button type="submit" className="btn btn-primary w-full">
+              {isLogin ? 'Login' : 'Register'}
+            </button>
+          </form>
+          <p className="auth-toggle">
+            {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
+            <button onClick={() => setIsLogin(!isLogin)}>
+              {isLogin ? 'Register here' : 'Login here'}
+            </button>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-shell">
       <nav className="navbar">
@@ -98,9 +180,22 @@ function App() {
           </div>
           <div className="nav-links">
             <button className={activeTab === 'home' ? 'active' : ''} onClick={() => setActiveTab('home')}>Home</button>
-            <button className={activeTab === 'donors' ? 'active' : ''} onClick={() => setActiveTab('donors')}>Donors</button>
-            <button className={activeTab === 'hospitals' ? 'active' : ''} onClick={() => setActiveTab('hospitals')}>Hospitals</button>
-            <button className={activeTab === 'requests' ? 'active' : ''} onClick={() => setActiveTab('requests')}>Requests</button>
+            
+            {(user.role === 'ROLE_USER' || user.role === 'ROLE_HOSPITAL') && (
+              <button className={activeTab === 'donors' ? 'active' : ''} onClick={() => setActiveTab('donors')}>
+                {user.role === 'ROLE_USER' ? 'My Profile' : 'Find Donors'}
+              </button>
+            )}
+            
+            {user.role === 'ROLE_HOSPITAL' && (
+              <button className={activeTab === 'hospitals' ? 'active' : ''} onClick={() => setActiveTab('hospitals')}>Hospital Info</button>
+            )}
+
+            <button className={activeTab === 'requests' ? 'active' : ''} onClick={() => setActiveTab('requests')}>
+              {user.role === 'ROLE_HOSPITAL' ? 'Manage Requests' : 'Blood Requests'}
+            </button>
+            
+            <button className="btn-logout" onClick={handleLogout}>Logout ({user.username})</button>
           </div>
         </div>
       </nav>
@@ -110,10 +205,14 @@ function App() {
           <section className="hero">
             <div className="hero-content">
               <h1 className="section-title">Save Lives. Donate Blood.</h1>
-              <p className="hero-subtitle">Connect donors with hospitals in real-time. Fast, reliable, and life-saving.</p>
+              <p className="hero-subtitle">Welcome, {user.username}! You are logged in as {user.role === 'ROLE_USER' ? 'a Donor' : 'a Hospital Representative'}.</p>
               <div className="hero-actions">
-                <button className="btn btn-primary" onClick={() => setActiveTab('donors')}>Become a Donor</button>
-                <button className="btn btn-outline" onClick={() => setActiveTab('requests')}>View Requests</button>
+                {user.role === 'ROLE_USER' ? (
+                  <button className="btn btn-primary" onClick={() => setActiveTab('donors')}>Update Donor Profile</button>
+                ) : (
+                  <button className="btn btn-primary" onClick={() => setActiveTab('requests')}>Post New Request</button>
+                )}
+                <button className="btn btn-outline" onClick={() => setActiveTab('donors')}>Find Donors</button>
               </div>
             </div>
             <div className="hero-stats glass-card">
@@ -132,50 +231,57 @@ function App() {
 
         {activeTab === 'donors' && (
           <div className="page-layout">
-            <aside className="page-sidebar glass-card">
-              <h3>Register as Donor</h3>
-              <form onSubmit={handleDonorSubmit} className="modern-form">
-                <input type="text" placeholder="Full Name" value={donorForm.name} onChange={e => setDonorForm({...donorForm, name: e.target.value})} required />
-                <input type="email" placeholder="Email Address" value={donorForm.email} onChange={e => setDonorForm({...donorForm, email: e.target.value})} required />
-                <input type="text" placeholder="Blood Group (e.g. A+)" value={donorForm.bloodGroup} onChange={e => setDonorForm({...donorForm, bloodGroup: e.target.value})} required />
-                <input type="tel" placeholder="Phone Number" value={donorForm.phone} onChange={e => setDonorForm({...donorForm, phone: e.target.value})} required />
-                <textarea placeholder="Address" value={donorForm.address} onChange={e => setDonorForm({...donorForm, address: e.target.value})} />
-                <button type="submit" className="btn btn-primary w-full">Register</button>
-              </form>
-            </aside>
-            <section className="page-content">
-              <div className="content-header">
-                <h2>Active Donors</h2>
-                <div className="search-box">
-                  <input type="text" placeholder="Search by Blood Group" value={searchGroup} onChange={e => setSearchGroup(e.target.value)} />
-                  <button className="btn btn-primary" onClick={handleSearch}>Search</button>
-                </div>
-              </div>
-              <div className="grid">
-                {donors.map(donor => (
-                  <div key={donor.id} className="donor-card glass-card">
-                    <div className="donor-avatar">{donor.bloodGroup}</div>
-                    <div className="donor-info">
-                      <h4>{donor.name}</h4>
-                      <p>{donor.phone}</p>
-                      <p className="small">{donor.email}</p>
-                    </div>
+            {user.role === 'ROLE_USER' ? (
+              <aside className="page-sidebar glass-card" style={{ gridColumn: 'span 2' }}>
+                <h3>My Donor Profile</h3>
+                <p className="small-info">Keep your information updated to ensure hospitals can reach you.</p>
+                <form onSubmit={handleDonorSubmit} className="modern-form">
+                  <input type="text" placeholder="Full Name" value={donorForm.name} onChange={e => setDonorForm({...donorForm, name: e.target.value})} required />
+                  <input type="email" placeholder="Email Address" value={donorForm.email || (donorForm.email = user.username)} disabled required />
+                  <input type="text" placeholder="Blood Group (e.g. A+)" value={donorForm.bloodGroup} onChange={e => setDonorForm({...donorForm, bloodGroup: e.target.value})} required />
+                  <input type="tel" placeholder="Phone Number" value={donorForm.phone} onChange={e => setDonorForm({...donorForm, phone: e.target.value})} required />
+                  <textarea placeholder="Address" value={donorForm.address} onChange={e => setDonorForm({...donorForm, address: e.target.value})} />
+                  <button type="submit" className="btn btn-primary w-full">Update My Profile</button>
+                </form>
+              </aside>
+            ) : (
+              <section className="page-content" style={{ gridColumn: 'span 2' }}>
+                <div className="content-header">
+                  <h2>Find Donors</h2>
+                  <div className="search-box">
+                    <input type="text" placeholder="Search Blood Group" value={searchGroup} onChange={e => setSearchGroup(e.target.value)} />
+                    <button className="btn btn-primary" onClick={handleSearch}>Search</button>
                   </div>
-                ))}
-              </div>
-            </section>
+                </div>
+                <div className="grid">
+                  {donors.map(donor => (
+                    <div key={donor.id} className="donor-card glass-card">
+                      <div className="donor-avatar">{donor.bloodGroup}</div>
+                      <div className="donor-info">
+                        <h4>{donor.name}</h4>
+                        <p>{donor.phone}</p>
+                        <p className="small">{donor.email}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {donors.length === 0 && <p className="empty-msg">No donors found. Try searching for a specific blood group.</p>}
+                </div>
+              </section>
+            )}
           </div>
         )}
 
-        {activeTab === 'hospitals' && (
+        {activeTab === 'hospitals' && user.role === 'ROLE_HOSPITAL' && (
           <div className="page-layout">
             <aside className="page-sidebar glass-card">
-              <h3>Register Hospital</h3>
+              <h3>Hospital Registration</h3>
+              <p className="small-info">Register your hospital to post blood requests.</p>
               <form onSubmit={handleHospitalSubmit} className="modern-form">
                 <input type="text" placeholder="Hospital Name" value={hospitalForm.name} onChange={e => setHospitalForm({...hospitalForm, name: e.target.value})} required />
                 <input type="text" placeholder="Location" value={hospitalForm.location} onChange={e => setHospitalForm({...hospitalForm, location: e.target.value})} required />
+                <input type="email" placeholder="Email Address" value={hospitalForm.email || (hospitalForm.email = user.username)} disabled required />
                 <input type="tel" placeholder="Contact Number" value={hospitalForm.contactNumber} onChange={e => setHospitalForm({...hospitalForm, contactNumber: e.target.value})} required />
-                <button type="submit" className="btn btn-primary w-full">Register</button>
+                <button type="submit" className="btn btn-primary w-full">Update Hospital Info</button>
               </form>
             </aside>
             <section className="page-content">
@@ -184,7 +290,7 @@ function App() {
                 {hospitals.map(hospital => (
                   <div key={hospital.id} className="hospital-card glass-card">
                     <h4>{hospital.name}</h4>
-                    <p>📍 {hospital.location}</p>
+                    <p> {hospital.location}</p>
                     <p>📞 {hospital.contactNumber}</p>
                   </div>
                 ))}
@@ -195,42 +301,41 @@ function App() {
 
         {activeTab === 'requests' && (
           <div className="page-layout">
-            <aside className="page-sidebar glass-card">
-              <h3>Create Blood Request</h3>
-              <form onSubmit={handleRequestSubmit} className="modern-form">
-                <select value={requestForm.hospitalId} onChange={e => setRequestForm({...requestForm, hospitalId: e.target.value})} required>
-                  <option value="">Select Hospital</option>
-                  {hospitals.map(h => (
-                    <option key={h.id} value={h.id}>{h.name}</option>
-                  ))}
-                </select>
-                <input type="text" placeholder="Blood Group Needed" value={requestForm.bloodGroupNeeded} onChange={e => setRequestForm({...requestForm, bloodGroupNeeded: e.target.value})} required />
-                <select value={requestForm.urgency} onChange={e => setRequestForm({...requestForm, urgency: e.target.value})}>
-                  <option value="LOW">LOW Urgency</option>
-                  <option value="MEDIUM">MEDIUM Urgency</option>
-                  <option value="HIGH">HIGH Urgency</option>
-                </select>
-                <textarea placeholder="Additional Notes" value={requestForm.notes} onChange={e => setRequestForm({...requestForm, notes: e.target.value})} />
-                <button type="submit" className="btn btn-primary w-full">Post Request</button>
-              </form>
-            </aside>
-            <section className="page-content">
-              <h2>Blood Requests</h2>
+            {user.role === 'ROLE_HOSPITAL' && (
+              <aside className="page-sidebar glass-card">
+                <h3>Create Blood Request</h3>
+                <form onSubmit={handleRequestSubmit} className="modern-form">
+                  <p className="small-info">Raising request for your hospital based on your profile.</p>
+                  <input type="text" placeholder="Blood Group Needed" value={requestForm.bloodGroupNeeded} onChange={e => setRequestForm({...requestForm, bloodGroupNeeded: e.target.value})} required />
+                  <select value={requestForm.urgency} onChange={e => setRequestForm({...requestForm, urgency: e.target.value})}>
+                    <option value="LOW">LOW Urgency</option>
+                    <option value="MEDIUM">MEDIUM Urgency</option>
+                    <option value="HIGH">HIGH Urgency</option>
+                  </select>
+                  <textarea placeholder="Additional Notes" value={requestForm.notes} onChange={e => setRequestForm({...requestForm, notes: e.target.value})} />
+                  <button type="submit" className="btn btn-primary w-full">Post Request</button>
+                </form>
+              </aside>
+            )}
+            <section className="page-content" style={{ gridColumn: user.role === 'ROLE_USER' ? 'span 2' : 'auto' }}>
+              <h2>{user.role === 'ROLE_HOSPITAL' ? 'Manage Your Requests' : 'Available Blood Requests'}</h2>
               <div className="list">
                 {requests.map(req => (
                   <div key={req.id} className={`request-card glass-card urgency-${req.urgency.toLowerCase()}`}>
                     <div className="request-badge">{req.bloodGroupNeeded}</div>
                     <div className="request-details">
-                      <h4>Hospital ID: {req.hospitalId}</h4>
+                      <h4>Hospital: {req.hospitalName || 'Unknown'}</h4>
                       <p className="urgency">Urgency: {req.urgency}</p>
                       <p className="notes">{req.notes}</p>
                       <div className="status-badge">{req.status}</div>
                     </div>
-                    <div className="request-actions">
-                      {req.status === 'PENDING' && (
-                        <button className="btn btn-primary btn-sm" onClick={() => handleStatusUpdate(req.id, 'FULFILLED')}>Mark Fulfilled</button>
-                      )}
-                    </div>
+                    {user.role === 'ROLE_HOSPITAL' && (
+                      <div className="request-actions">
+                        {req.status === 'PENDING' && (
+                          <button className="btn btn-primary btn-sm" onClick={() => handleStatusUpdate(req.id, 'FULFILLED')}>Mark Fulfilled</button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -243,3 +348,4 @@ function App() {
 }
 
 export default App;
+

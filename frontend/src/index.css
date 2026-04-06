@@ -344,6 +344,63 @@ input, select, textarea {
   margin-top: 0.5rem;
 }
 
+/* Auth Styles */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e0e0e0 100%);
+}
+
+.auth-card {
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.auth-card h2 {
+  margin: 1.5rem 0;
+  font-weight: 800;
+  color: var(--secondary);
+}
+
+.auth-toggle {
+  margin-top: 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.auth-toggle button {
+  background: none;
+  color: var(--primary);
+  font-weight: 700;
+  padding: 0 0.25rem;
+}
+
+.auth-toggle button:hover {
+  text-decoration: underline;
+}
+
+.btn-logout {
+  background: var(--secondary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.btn-logout:hover {
+  background: var(--primary);
+}
+
+.small-info {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
 /* Responsive */
 @media (max-width: 992px) {
   .hero { flex-direction: column; text-align: center; }

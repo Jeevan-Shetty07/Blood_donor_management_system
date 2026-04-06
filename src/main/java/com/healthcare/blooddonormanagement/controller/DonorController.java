@@ -4,6 +4,7 @@ import com.healthcare.blooddonormanagement.model.Donor;
 import com.healthcare.blooddonormanagement.service.DonorService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,11 +26,13 @@ public class DonorController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_HOSPITAL')")
     public ResponseEntity<List<Donor>> getAll() {
         return ResponseEntity.ok(donorService.getAllDonors());
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasRole('ROLE_HOSPITAL')")
     public ResponseEntity<List<Donor>> search(@RequestParam String bloodGroup) {
         return ResponseEntity.ok(donorService.searchByBloodGroup(bloodGroup));
     }

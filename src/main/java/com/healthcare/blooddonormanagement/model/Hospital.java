@@ -20,13 +20,18 @@ public class Hospital {
     @NotBlank(message = "Contact number is mandatory")
     private String contactNumber;
 
+    @NotBlank(message = "Email is mandatory")
+    @Column(unique = true)
+    private String email;
+
     public Hospital() {}
 
-    public Hospital(Long id, String name, String location, String contactNumber) {
+    public Hospital(Long id, String name, String location, String contactNumber, String email) {
         this.id = id;
         this.name = name;
         this.location = location;
         this.contactNumber = contactNumber;
+        this.email = email;
     }
 
     public Long getId() {
@@ -59,5 +64,13 @@ public class Hospital {
 
     public void setContactNumber(String contactNumber) {
         this.contactNumber = contactNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -12,6 +12,7 @@ public class BloodRequest {
     private Long id;
 
     private Long hospitalId;
+    private String hospitalName;
 
     @NotBlank(message = "Blood group is mandatory")
     private String bloodGroupNeeded;
@@ -25,9 +26,10 @@ public class BloodRequest {
 
     public BloodRequest() {}
 
-    public BloodRequest(Long id, Long hospitalId, String bloodGroupNeeded, String urgency, String status, String notes) {
+    public BloodRequest(Long id, Long hospitalId, String hospitalName, String bloodGroupNeeded, String urgency, String status, String notes) {
         this.id = id;
         this.hospitalId = hospitalId;
+        this.hospitalName = hospitalName;
         this.bloodGroupNeeded = bloodGroupNeeded;
         this.urgency = urgency;
         this.status = status;
@@ -48,6 +50,14 @@ public class BloodRequest {
 
     public void setHospitalId(Long hospitalId) {
         this.hospitalId = hospitalId;
+    }
+
+    public String getHospitalName() {
+        return hospitalName;
+    }
+
+    public void setHospitalName(String hospitalName) {
+        this.hospitalName = hospitalName;
     }
 
     public String getBloodGroupNeeded() {
